@@ -3,9 +3,10 @@
 import re
 
 import pandas as pd
-from pandas.api.types import is_bool_dtype, is_datetime64_any_dtype, is_numeric_dtype, is_scalar
+from pandas.api.types import is_bool_dtype, is_datetime64_any_dtype, is_numeric_dtype
 
-MONEY_HINTS = ("amount", "cost", "price", "revenue", "value", "total", "spend", "sales", "salary")
+from core.formatting import fmt, is_money
+
 ID_HINTS = {"id", "sku", "code", "number", "no", "#"}
 # Per-unit columns where a total is meaningless (show the average instead)
 UNIT_HINTS = {"unit", "price", "rate", "level", "pct", "percent", "%"}
@@ -13,10 +14,6 @@ UNIT_HINTS = {"unit", "price", "rate", "level", "pct", "percent", "%"}
 
 def _words(col) -> set[str]:
     return set(re.split(r"[^a-z#%]+", str(col).lower()))
-
-
-def is_money(col) -> bool:
-    return any(h in str(col).lower() for h in MONEY_HINTS)
 
 
 def is_unit_like(col) -> bool:
@@ -72,22 +69,6 @@ def summable(types: dict) -> list[str]:
     """Number columns worth totalling, money columns first."""
     cols = [c for c in cols_of(types, "number") if not is_unit_like(c)]
     return sorted(cols, key=lambda c: not is_money(c))
-
-
-def fmt(col, v) -> str:
-    """Format a value for people: $ for money columns, thousands separators, readable dates."""
-    if v is None or (is_scalar(v) and pd.isna(v)):
-        return ""
-    if isinstance(v, pd.Timestamp):
-        return f"{v:%b %d, %Y}"
-    if isinstance(v, (int, float)) or is_numeric_dtype(type(v)):
-        if isinstance(v, bool):
-            return str(v)
-        v = float(v)
-        if is_money(col):
-            return f"-${-v:,.2f}" if v < 0 else f"${v:,.2f}"
-        return f"{v:,.0f}" if v.is_integer() else f"{v:,.2f}"
-    return str(v)
 
 
 def breakdown(df: pd.DataFrame, by: str, sums: list[str]) -> pd.DataFrame:

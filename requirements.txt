@@ -26,3 +26,4 @@ schedule           # simple in-process job scheduling
 pytest             # tests
 ruff               # linting + formatting
 pyyaml             # read YAML settings files
+reportlab          # create PDFs (used for mock invoices)

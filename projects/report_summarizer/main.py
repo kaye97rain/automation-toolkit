@@ -20,6 +20,7 @@ import pandas as pd
 
 from core import config, notify
 from core.excel import write_sheets
+from core.html_email import AMBER, GREEN, RED, bullets, heading, html_table, page
 from core.logger import get_logger
 from core.runner import run_job
 from projects.report_summarizer import profiler, rules
@@ -90,43 +91,24 @@ def write_summary_excel(path: Path, df: pd.DataFrame, types: dict, r: dict) -> P
 
 # --- Email ---
 
-TH = "text-align:left;padding:4px 10px;background:#1F4E78;color:#fff;font-weight:600"
-TD = "padding:4px 10px;border-bottom:1px solid #e5e5e5"
-
-
-def html_table(df: pd.DataFrame, max_rows: int = 5) -> str:
-    head = "".join(f'<th style="{TH}">{escape(str(c))}</th>' for c in df.columns)
-    body = "".join(
-        "<tr>" + "".join(f'<td style="{TD}">{escape(profiler.fmt(c, v))}</td>' for c, v in row.items()) + "</tr>"
-        for _, row in df.head(max_rows).iterrows()
-    )
-    more = (f'<p style="color:#777;font-size:12px;margin:4px 0">...and {len(df) - max_rows} more '
-            f"in the attachment</p>") if len(df) > max_rows else ""
-    return f'<table style="border-collapse:collapse;font-size:13px"><tr>{head}</tr>{body}</table>{more}'
-
-
-def bullets(items: list[str], color: str = "#222") -> str:
-    return f'<ul style="margin:4px 0;color:{color}">' + "".join(f"<li>{escape(i)}</li>" for i in items) + "</ul>"
-
-
 def section_html(r: dict) -> str:
-    parts = [f'<h3 style="color:#1F4E78;margin:28px 0 2px">{escape(r["title"])}</h3>']
+    parts = [heading(r["title"])]
     if "error" in r:
-        parts.append(f'<p style="color:#cf222e">Could not read {escape(r["file"])}: {escape(r["error"])}</p>')
+        parts.append(f'<p style="color:{RED}">Could not read {escape(r["file"])}: {escape(r["error"])}</p>')
         return "".join(parts)
 
     parts.append(f'<p style="color:#777;margin:0 0 8px;font-size:12px">{escape(r["file"])} &middot; '
                  f'{escape(r["mode"])}</p>')
     for a in r["alerts"]:
         if len(a["rows"]):
-            parts.append(f'<p style="margin:10px 0 4px;color:#cf222e;font-weight:600">&#9888; '
+            parts.append(f'<p style="margin:10px 0 4px;color:{RED};font-weight:600">&#9888; '
                          f'{escape(a["name"])}: {len(a["rows"])}</p>' + html_table(a["rows"]))
         else:
-            parts.append(f'<p style="margin:10px 0 4px;color:#1a7f37">&#10003; {escape(a["name"])}: none</p>')
+            parts.append(f'<p style="margin:10px 0 4px;color:{GREEN}">&#10003; {escape(a["name"])}: none</p>')
     parts.append(bullets(r["notes"]))
     if r["issues"]:
-        parts.append('<p style="margin:8px 0 0;color:#9a6700;font-weight:600">Data quality</p>'
-                     + bullets(r["issues"], "#9a6700"))
+        parts.append(f'<p style="margin:8px 0 0;color:{AMBER};font-weight:600">Data quality</p>'
+                     + bullets(r["issues"], AMBER))
     if r["breakdowns"]:
         name, table = next(iter(r["breakdowns"].items()))
         parts.append(f'<p style="margin:10px 0 4px;font-weight:600">{escape(name)}</p>' + html_table(table))
@@ -134,14 +116,9 @@ def section_html(r: dict) -> str:
 
 
 def build_email(results: list[dict]) -> str:
-    return f"""\
-<div style="font-family:Segoe UI,Arial,sans-serif;font-size:14px;color:#222;max-width:820px">
-  <h2 style="color:#1F4E78;margin-bottom:4px">Report Summary</h2>
-  <p style="color:#777;margin-top:0">{date.today():%A, %B %d, %Y} &middot; {len(results)} file(s).
-     Full details are in the attached Excel summaries.</p>
-  {"".join(section_html(r) for r in results)}
-  <p style="color:#999;font-size:12px;margin-top:28px">Sent automatically by the automation toolkit.</p>
-</div>"""
+    return page("Report Summary",
+                f"{len(results)} file(s). Full details are in the attached Excel summaries.",
+                "".join(section_html(r) for r in results))
 
 
 def main(dry_run: bool) -> None:

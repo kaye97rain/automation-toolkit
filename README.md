@@ -11,13 +11,18 @@ automation-toolkit/
 │   ├── logger.py         console + rotating log files in logs/
 │   ├── http.py           API session with retries, pagination helper
 │   ├── excel.py          DataFrames -> formatted Excel workbooks
+│   ├── db.py             database connection (SQLite by default)
+│   ├── formatting.py     $ amounts, dates and numbers for people
+│   ├── html_email.py     tables, bullets and layout for report emails
 │   ├── notify.py         email (SMTP) + Slack alerts
 │   └── runner.py         wraps a job: timing, logging, failure alerts
 ├── projects/             one folder per automation
 │   ├── sales_report/       working example: CSV -> Excel summary report
 │   ├── weekly_sales_email/ emails the sales report with a KPI summary
-│   └── report_summarizer/  summarizes ANY Excel/CSV in data/input and emails it
-│                           (business rules per report in reports.yaml)
+│   ├── report_summarizer/  summarizes ANY Excel/CSV in data/input and emails it
+│   │                       (business rules per report in reports.yaml)
+│   └── invoice_processor/  PDF invoices -> extracted, validated, saved to a database,
+│                           filed to processed/ or needs_review/, register + email
 ├── templates/            starter used by new-project.ps1
 ├── data/input, output/   files going in and out
 ├── logs/                 one log file per project

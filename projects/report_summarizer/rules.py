@@ -30,7 +30,7 @@ def apply_rule(df: pd.DataFrame, rule: dict, log: logging.Logger) -> dict:
     for col, expr in (rule.get("calculated") or {}).items():
         try:
             df[col] = df.eval(expr)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - any bad expression in reports.yaml is skipped
             log.warning("Skipping calculated column %r: %s", col, e)
 
     sums = [c for c in rule.get("sum", []) if c in df.columns]
@@ -45,7 +45,7 @@ def apply_rule(df: pd.DataFrame, rule: dict, log: logging.Logger) -> dict:
     for alert in rule.get("alerts", []):
         try:
             hits = df.query(alert["when"])
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - any bad condition in reports.yaml is skipped
             log.warning("Skipping alert %r: %s", alert["name"], e)
             continue
         if alert.get("sort_by") in hits.columns:
