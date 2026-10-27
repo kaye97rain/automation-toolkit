@@ -1,0 +1,27 @@
+# --- Core ---
+python-dotenv      # load secrets/config from .env
+requests           # call REST APIs
+pandas             # clean, merge, reshape tabular data
+openpyxl           # read/write Excel with formatting
+
+# --- Documents ---
+pdfplumber         # extract text and tables from PDFs
+python-docx        # generate Word documents
+
+# --- Integrations ---
+slack_sdk          # Slack messages and bots
+gspread            # Google Sheets
+anthropic          # Claude API for AI steps (classify, extract, summarize)
+
+# --- Browser / web ---
+playwright         # automate websites with no API (run: playwright install chromium)
+fastapi            # receive webhooks / build small internal APIs
+uvicorn            # server to run FastAPI
+
+# --- Data storage & scheduling ---
+sqlalchemy         # databases (SQLite, Postgres, SQL Server...)
+schedule           # simple in-process job scheduling
+
+# --- Dev tools ---
+pytest             # tests
+ruff               # linting + formatting

@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run current project (main.py)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "projects.${input:project}.main",
+      "cwd": "${workspaceFolder}"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "project",
+      "type": "promptString",
+      "description": "Project folder name under projects/",
+      "default": "sales_report"
+    }
+  ]
+}

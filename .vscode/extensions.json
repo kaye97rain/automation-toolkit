@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-toolsai.jupyter",
+    "charliermarsh.ruff",
+    "rangav.vscode-thunder-client",
+    "mikestead.dotenv",
+    "mechatroner.rainbow-csv",
+    "eamodio.gitlens",
+    "mtxr.sqltools"
+  ]
+}
