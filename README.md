@@ -14,14 +14,18 @@ automation-toolkit/
 │   ├── notify.py         email (SMTP) + Slack alerts
 │   └── runner.py         wraps a job: timing, logging, failure alerts
 ├── projects/             one folder per automation
-│   └── sales_report/     working example: CSV -> Excel summary report
+│   ├── sales_report/       working example: CSV -> Excel summary report
+│   ├── weekly_sales_email/ emails the sales report with a KPI summary
+│   └── report_summarizer/  summarizes ANY Excel/CSV in data/input and emails it
+│                           (business rules per report in reports.yaml)
 ├── templates/            starter used by new-project.ps1
 ├── data/input, output/   files going in and out
 ├── logs/                 one log file per project
 ├── tests/                pytest tests
 ├── .env.example          copy to .env and add your keys (never commit .env)
 ├── setup.ps1             one-time environment setup
-└── new-project.ps1       create a new automation from the template
+├── new-project.ps1       create a new automation from the template
+└── schedule-project.ps1  run a project weekly via Task Scheduler
 ```
 
 ## Daily use

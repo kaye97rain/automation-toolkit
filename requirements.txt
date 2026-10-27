@@ -25,3 +25,4 @@ schedule           # simple in-process job scheduling
 # --- Dev tools ---
 pytest             # tests
 ruff               # linting + formatting
+pyyaml             # read YAML settings files

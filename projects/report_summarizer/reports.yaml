@@ -1,0 +1,47 @@
+# Business rules for specific reports.
+# Files that don't match any rule still get an automatic summary.
+#
+#   match:       file name pattern (* = anything), case-insensitive
+#   title:       heading used in the email
+#   calculated:  new columns built from existing ones
+#   group_by:    columns to break totals down by (one sheet each)
+#   sum:         columns to total in those breakdowns
+#   alerts:      rows to flag; `when` is a condition, `show` the columns to list,
+#                optional `sort_by` (largest first; add `ascending: true` for smallest first)
+#
+# Column names with spaces go in backticks: `Qty On Hand`
+
+reports:
+  inventory:
+    match: "inventory*"
+    title: Inventory Status
+    calculated:
+      Stock Value: "`Qty On Hand` * `Unit Cost`"
+    group_by: [Warehouse, Category]
+    sum: [Stock Value, Qty On Hand]
+    alerts:
+      - name: Out of stock
+        when: "`Qty On Hand` == 0"
+        show: [SKU, Item, Warehouse, Supplier]
+      - name: Below reorder level
+        when: "`Qty On Hand` > 0 and `Qty On Hand` < `Reorder Level`"
+        show: [SKU, Item, Warehouse, Qty On Hand, Reorder Level, Supplier]
+        sort_by: Qty On Hand
+        ascending: true
+      - name: Overstocked (over 4x reorder level)
+        when: "`Qty On Hand` > `Reorder Level` * 4"
+        show: [SKU, Item, Warehouse, Qty On Hand, Reorder Level, Stock Value]
+        sort_by: Stock Value
+
+  sales:
+    match: "sales*"
+    title: Sales Performance
+    calculated:
+      Revenue: "units * unit_price"
+    group_by: [region, rep, product]
+    sum: [Revenue, units]
+    alerts:
+      - name: Large orders ($5,000+)
+        when: "Revenue >= 5000"
+        show: [date, region, rep, product, units, Revenue]
+        sort_by: Revenue
