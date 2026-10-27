@@ -31,7 +31,8 @@ automation-toolkit/
 ## Daily use
 
 ```powershell
-cd C:\Users\Rain\automation-toolkit
+cd automation-toolkit                        # wherever you cloned it
+.\setup.ps1                                  # first time only
 .\.venv\Scripts\Activate.ps1                 # activate the environment
 
 python -m projects.sales_report.main         # run the example
@@ -51,11 +52,13 @@ wrapped in `run_job()` so every run is logged and failures can alert you on Slac
 ## Scheduling a job (Windows Task Scheduler)
 
 ```powershell
-$action = New-ScheduledTaskAction -Execute "C:\Users\Rain\automation-toolkit\.venv\Scripts\python.exe" `
-  -Argument "-m projects.sales_report.main" -WorkingDirectory "C:\Users\Rain\automation-toolkit"
-$trigger = New-ScheduledTaskTrigger -Daily -At 8am
-Register-ScheduledTask -TaskName "Sales Report" -Action $action -Trigger $trigger
+.\schedule-project.ps1 report_summarizer -Day Monday -At 8am     # schedule weekly
+Start-ScheduledTask "Automation - report_summarizer"             # test it now
+Unregister-ScheduledTask "Automation - report_summarizer"        # remove it
 ```
+
+The task runs hidden in the background; if the PC is off at the scheduled time it runs at next startup.
+Check `logs\<project>.log` to see what happened.
 
 ## Installed libraries
 
