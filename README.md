@@ -7,6 +7,7 @@ A reusable starting point for business automations in Python.
 ```
 automation-toolkit/
 ├── core/                 shared helpers every project reuses
+│   ├── ai.py             Claude API: structured data from text/PDFs/scans, cost tracking
 │   ├── config.py         paths + settings from .env
 │   ├── logger.py         console + rotating log files in logs/
 │   ├── http.py           API session with retries, pagination helper
@@ -21,8 +22,11 @@ automation-toolkit/
 │   ├── weekly_sales_email/ emails the sales report with a KPI summary
 │   ├── report_summarizer/  summarizes ANY Excel/CSV in data/input and emails it
 │   │                       (business rules per report in reports.yaml)
-│   └── invoice_processor/  PDF invoices -> extracted, validated, saved to a database,
-│                           filed to processed/ or needs_review/, register + email
+│   ├── invoice_processor/  PDF invoices -> extracted, validated, saved to a database,
+│   │                       filed to processed/ or needs_review/, register + email
+│   │                       (AI fallback for unfamiliar layouts and scanned invoices)
+│   └── email_triage/       AI reads customer emails: category, urgency, team routing,
+│                           draft replies (policies in company_context.md)
 ├── templates/            starter used by new-project.ps1
 ├── data/input, output/   files going in and out
 ├── logs/                 one log file per project
