@@ -5,6 +5,8 @@ Drop your own CSV at data/input/sales.csv (columns: date, region, rep, product, 
 or let it generate sample data on first run.
 """
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
@@ -58,11 +60,11 @@ def transform(df: pd.DataFrame) -> dict[str, pd.DataFrame]:
             "Product x Region": by_product, "Raw Data": df}
 
 
-def load(sheets: dict[str, pd.DataFrame]) -> None:
+def load(sheets: dict[str, pd.DataFrame]) -> Path:
     out = write_sheets(config.OUTPUT_DIR / "sales_report.xlsx", sheets)
     total = sheets["Raw Data"]["revenue"].sum()
     log.info("Report written to %s (total revenue: $%s)", out, f"{total:,.0f}")
-    # Next step ideas: notify.send_email(...attachments=[out]) or notify.send_slack(...)
+    return out
 
 
 def main() -> None:
